@@ -2,7 +2,6 @@ import os
 import requests
 import json
 import re
-import sys
 from bs4 import BeautifulSoup
 
 
@@ -129,8 +128,6 @@ def main():
     jsonPath = os.path.join(jsonFolderPath, f"{bookName}.json")
     pathInJson = checkFileExist(jsonPath)
     pathInBooks = checkFolderExist(bookPath)
-    print(bookPath, jsonPath)
-    print(pathInBooks, pathInJson)
     
     if (pathInJson is True) or (pathInBooks is True):
         data = loadDataFromFile(jsonPath)
