@@ -1,0 +1,9 @@
+File store settings in json format.
+
+Name: Book Name
+Menu URL: Menu's URL
+Page CSS: CSS selector for all pages
+Page Link: Prefix of the page URL
+Title CSS: CSS selector for title
+Body CSS: CSS selector for content
+UnwantedSelector: CSS selector for unwanted item

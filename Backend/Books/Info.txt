@@ -1,0 +1,2 @@
+All books fetch from website will be stored in separated folder with it's book name.
+All chapter of the book will be stored in json file under the book's folder.
