@@ -27,7 +27,6 @@ def beautifulSoupFunction(data, itemCSS, needLink):
 
 def getTitle(data, titleCSS):
     title = beautifulSoupFunction(data, titleCSS, None)
-    print(title)
     return title
 
 
