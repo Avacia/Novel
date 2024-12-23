@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import re
+import sys
 from bs4 import BeautifulSoup
 
 
@@ -26,7 +27,8 @@ def beautifulSoupFunction(data, itemCSS, needLink):
 
 def getTitle(data, titleCSS):
     title = beautifulSoupFunction(data, titleCSS, None)
-    return title[0]
+    print(title)
+    return title
 
 
 def getBody(data, bodyCSS):
@@ -39,8 +41,9 @@ def unwantedItem(soup, removeItem):
 
 
 def createBookFolder(bookName, folderPath):
-    if os.path.exists(folderPath) and os.path.isdir(folderPath):        
-        os.makedirs(folderPath, exist_ok=True)
+    if os.path.exists(folderPath) and os.path.isdir(folderPath):   
+        bookPath = os.path.join(folderPath, bookName)     
+        os.makedirs(bookPath, exist_ok=True)
         print(f"Folder {bookName} created inside Books.")
         return folderPath
         
@@ -63,7 +66,7 @@ def createBookInfo(bookName, menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwa
     
     folderPath = findFolderPath(folderName)
     filePath = os.path.join(folderPath, fileName)
-    with open(filePath, "w") as json_file:
+    with open(filePath, "w", encoding="utf-8") as json_file:
         json.dump(data, json_file, indent=4)
     print(f"JSON file {fileName} created successfully.")
     
@@ -141,7 +144,7 @@ def main():
         
         print("Loaded data from existing book folder.")  
     else:
-        createBookFolder(bookName, bookFolder)
+        createBookFolder(bookName, bookFolderPath)
         menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector = collectUserInput()
         createBookInfo(bookName, menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, jsonFolder)
     
