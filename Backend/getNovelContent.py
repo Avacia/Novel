@@ -27,7 +27,6 @@ def beautifulSoupFunction(data, itemCSS, needLink):
 
 def getTitle(data, titleCSS):
     title = beautifulSoupFunction(data, titleCSS, None)
-    print(title)
     return title
 
 
@@ -132,7 +131,7 @@ def main():
     pathInJson = checkFileExist(jsonPath)
     pathInBooks = checkFolderExist(bookPath)
     
-    if (pathInJson is True) or (pathInBooks is True):
+    if pathInJson is True:
         data = loadDataFromFile(jsonPath)
            
         menuUrl = data["Menu URL"]
@@ -142,11 +141,14 @@ def main():
         bodyCSS = data["Body CSS"]
         unwantedSelector = data["Unwanted selector"]
         
-        print("Loaded data from existing book folder.")  
+        print("Loaded data from existing book folder.")
+        
     else:
-        createBookFolder(bookName, bookFolderPath)
         menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector = collectUserInput()
         createBookInfo(bookName, menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, jsonFolder)
+        
+    if pathInBooks is False:
+        createBookFolder(bookName, bookFolderPath)
     
     data = fetchDataFromWebMenu(menuUrl)
     page = beautifulSoupFunction(data, pageCSS, pageLink)

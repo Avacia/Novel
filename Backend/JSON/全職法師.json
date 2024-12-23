@@ -1,9 +1,9 @@
 {
     "Name": "\u5168\u8077\u6cd5\u5e2b",
     "Menu URL": "https://tw.fxnzw.com/fxnchapter/45415.html",
-    "Page CSS": "#BookText ul li a",
-    "Page Link": "https://tw.fxnzw.com/",
+    "Page CSS": "#BookText li a",
+    "Page Link": "https://tw.fxnzw.com",
     "Title CSS": "h1",
-    "Body CSS": "div p",
+    "Body CSS": "#content div:nth-of-type(5)",
     "Unwanted selector": ""
 }
