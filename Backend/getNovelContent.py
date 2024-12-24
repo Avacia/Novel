@@ -12,10 +12,15 @@ def fetchDataFromWebMenu(link):
     return replacedResponse
 
 
+def updateURL(url, pageNumber):
+    pageURL = url.replace("{i}", str(pageNumber))
+    return pageURL
+
+
 def beautifulSoupFunction(data, itemCSS, needLink):
     soup = BeautifulSoup(data, 'html.parser')
     items = soup.select(itemCSS)
-    
+
     if needLink is None:
         return [item.get_text(strip=True) for item in items]
     else:
@@ -50,10 +55,11 @@ def createBookFolder(bookName, folderPath):
         print(f"The folder 'Books' does not exist in the current directory.")
         
 
-def createBookInfo(bookName, menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, folderName):
+def createBookInfo(bookName, menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, folderName):
     data = {
         "Name" : bookName,
         "Menu URL": menuUrl,
+        "Multi Page": multiPage,
         "Page CSS": pageCSS,
         "Page Link": pageLink,
         "Title CSS": titleCSS,
@@ -90,12 +96,13 @@ def checkFileExist(filePath):
 
 def collectUserInput():
     menuUrl = input("Please input the menu url: ")
+    multiPage = input("Please input the multi page css or leave empty: ")
     pageCSS = input("Please input page css: ")
     pageLink = input("Please input page link: ")
     titleCSS = input("Please input chapter title css: ")
     bodyCSS = input("Please input chapter body css: ")
     unwantedSelector = input("Please input the unwanted selector: ")
-    return menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector
+    return menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector
 
 
 def loadDataFromFile(dataPath):
@@ -108,6 +115,27 @@ def findFolderPath(folderName):
     currentPath = os.getcwd()
     targetPath = os.path.join(currentPath, folderName)
     return targetPath
+
+
+def createPages(page, titleCSS, bodyCSS, bookPath):
+    for i in range(len(page)):
+        printProgressBar(i + 1, len(page), prefix = 'Progress:', suffix = "Complete", length = 50)
+        data = fetchDataFromWebMenu(page[i])
+        title = getTitle(data, titleCSS)
+        paragraph = getBody(data, bodyCSS)
+        createFileForChapter(i + 1, title, paragraph, bookPath)
+
+
+def createFolderPath(folder, bookName):
+    path = findFolderPath(folder)
+    return os.path.join(path, bookName)
+
+
+def getLinks(url, cssSelector, pageLink):
+    data = fetchDataFromWebMenu(url)
+    print(data)
+    result = beautifulSoupFunction(data, cssSelector, pageLink)
+    return result
 
 
 def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
@@ -123,11 +151,9 @@ def main():
     bookFolder = "Books"
     jsonFolder = "JSON"
     bookName = input("Please input book name: ")
-    
-    bookFolderPath = findFolderPath(bookFolder)
-    bookPath = os.path.join(bookFolderPath, bookName)
-    jsonFolderPath = findFolderPath(jsonFolder)
-    jsonPath = os.path.join(jsonFolderPath, f"{bookName}.json")
+
+    bookPath = createFolderPath(bookFolder, bookName)
+    jsonPath = createFolderPath(jsonFolder, f"{bookName}.json")
     pathInJson = checkFileExist(jsonPath)
     pathInBooks = checkFolderExist(bookPath)
     
@@ -135,6 +161,7 @@ def main():
         data = loadDataFromFile(jsonPath)
            
         menuUrl = data["Menu URL"]
+        multiPage = data["Multi Page"]
         pageCSS = data["Page CSS"]
         pageLink = data["Page Link"]
         titleCSS = data["Title CSS"]
@@ -144,20 +171,22 @@ def main():
         print("Loaded data from existing book folder.")
         
     else:
-        menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector = collectUserInput()
-        createBookInfo(bookName, menuUrl, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, jsonFolder)
+        menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector = collectUserInput()
+        createBookInfo(bookName, menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, jsonFolder)
         
     if pathInBooks is False:
-        createBookFolder(bookName, bookFolderPath)
-    
-    data = fetchDataFromWebMenu(menuUrl)
-    page = beautifulSoupFunction(data, pageCSS, pageLink)
-    
-    for i in range(len(page)):
-        printProgressBar(i, len(page), prefix = 'Progress:', suffix = "Complete", length = 50)
-        data = fetchDataFromWebMenu(page[i])
-        title = getTitle(data, titleCSS)
-        paragraph = getBody(data, bodyCSS)
-        createFileForChapter(i + 1, title, paragraph, bookPath)
+        createBookFolder(bookName, findFolderPath(bookFolder))
 
+    if multiPage:
+        menuPage = updateURL(menuUrl, 1)
+        result = getLinks(menuPage, multiPage, pageLink)
+        allPages = []
+        for index in range(0, len(result)):
+            pageURL = updateURL(index + 1)
+            allPages.extend(getLinks(pageURL, pageCSS, pageLink))
+        createPages(allPages, titleCSS, bodyCSS, bookPath)
+
+    else:
+        page = getLinks(menuUrl, pageCSS, pageLink)
+        createPages(page, titleCSS, bodyCSS, bookPath)
 main()
