@@ -4,6 +4,7 @@ import json
 import re
 import sys
 from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor
 
 
 def fetchDataFromWebMenu(link):
@@ -111,6 +112,14 @@ def loadDataFromFile(dataPath):
     return data
 
 
+def fetchAndCreatePage(i, page, titleCSS, bodyCSS, bookPath):
+    printProgressBar(i + 1, len(page), prefix='Progress:', suffix="Complete", length=50)
+    data = fetchDataFromWebMenu(page[i])
+    title = getTitle(data, titleCSS)
+    paragraph = getBody(data, bodyCSS)
+    createFileForChapter(i + 1, title, paragraph, bookPath)
+    
+
 def findFolderPath(folderName):
     currentPath = os.getcwd()
     targetPath = os.path.join(currentPath, folderName)
@@ -118,12 +127,11 @@ def findFolderPath(folderName):
 
 
 def createPages(page, titleCSS, bodyCSS, bookPath):
-    for i in range(len(page)):
-        printProgressBar(i + 1, len(page), prefix = 'Progress:', suffix = "Complete", length = 50)
-        data = fetchDataFromWebMenu(page[i])
-        title = getTitle(data, titleCSS)
-        paragraph = getBody(data, bodyCSS)
-        createFileForChapter(i + 1, title, paragraph, bookPath)
+    with ThreadPoolExecutor() as executor:
+        results = executor.map(lambda i: fetchAndCreatePage(i, page, titleCSS, bodyCSS, bookPath), 
+                                range(len(page)))
+        for _ in results:
+            pass
 
 
 def createFolderPath(folder, bookName):
@@ -133,7 +141,6 @@ def createFolderPath(folder, bookName):
 
 def getLinks(url, cssSelector, pageLink):
     data = fetchDataFromWebMenu(url)
-    print(data)
     result = beautifulSoupFunction(data, cssSelector, pageLink)
     return result
 
