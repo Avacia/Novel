@@ -1,16 +1,16 @@
 # Novel
 
-# Backend - Novel Content Scraper and Flask API Server
+## Backend - ##Novel Content Scraper and Flask API Server
 
 This document provides details on two integrated components: a novel content scraper and a Flask API server to organize and serve the scraped content.
 
 ---
 
-## Novel Content Scraper
+### Novel Content Scraper
 
 This script is designed to scrape novel content from web pages, organize it into structured JSON files, and save the chapters into corresponding folders. The program is highly configurable and uses user inputs to define scraping behavior and file organization.
 
-### Features
+#### Features
 
 - Fetch data from web pages using custom CSS selectors.
 - Multi-page and single-page menu support.
@@ -18,7 +18,7 @@ This script is designed to scrape novel content from web pages, organize it into
 - Save metadata and configuration in JSON files.
 - Concurrent processing with ThreadPoolExecutor for faster chapter downloads.
 
-### Prerequisites
+#### Prerequisites
 
 - Python 3.x
 - `requests` library
@@ -31,7 +31,7 @@ Install the required libraries using pip:
 pip install requests beautifulsoup4
 ```
 
-### How It Works
+#### How It Works
 
 1. **User Input or Existing Data:**
    - If a JSON file exists for a given book, the program loads its configuration.
@@ -48,9 +48,9 @@ pip install requests beautifulsoup4
 4. **Save Chapters:**
    - Each chapter is saved as a JSON file in the corresponding book folder.
 
-### Code Overview
+#### Code Overview
 
-#### Functions
+##### Functions
 
 - **`fetchDataFromWebMenu(link)`**: Fetches HTML content from a URL and cleans up unwanted characters.
 - **`updateURL(url, pageNumber)`**: Replaces placeholders in a URL with the current page number.
@@ -61,7 +61,7 @@ pip install requests beautifulsoup4
 - **`createPages(...)`**: Downloads and saves chapter data concurrently using a thread pool.
 - **`printProgressBar(...)`**: Displays a progress bar in the console during chapter processing.
 
-#### Main Function
+##### Main Function
 The `main()` function handles the overall workflow:
 
 - Collects or loads user input.
@@ -69,14 +69,14 @@ The `main()` function handles the overall workflow:
 - Scrapes the web pages for chapters.
 - Saves chapters as JSON files.
 
-### Error Handling
+#### Error Handling
 The script includes error handling for:
 
 - Missing folders or files.
 - Incorrect user inputs.
 - Network or scraping errors.
 
-### Usage
+#### Usage
 
 1. Run the script using Python:
 
@@ -98,17 +98,17 @@ The script includes error handling for:
 
 ---
 
-## Flask API Server
+### Flask API Server
 
 The Flask API server serves as an interface for accessing the scraped novel data. It is designed to query and serve data in JSON format to front-end applications or other services.
 
-### Features
+#### Features
 
 - Serve metadata and chapter data via RESTful endpoints.
 - Load chapter content dynamically from stored JSON files.
 - Easily configurable routes for various use cases.
 
-### Prerequisites
+#### Prerequisites
 
 - Python 3.x
 - `Flask` library
@@ -119,9 +119,9 @@ Install Flask using pip:
 pip install Flask
 ```
 
-### Flask Application Structure
+#### Flask Application Structure
 
-#### Endpoints
+##### Endpoints
 
 1. **`GET /booksMenu`**
    - Returns a list of all available books.
@@ -154,7 +154,7 @@ pip install Flask
      }
      ```
 
-#### How to Run the Server
+##### How to Run the Server
 
 1. Navigate to the folder containing the Flask server script.
 2. Run the server:
@@ -163,7 +163,7 @@ pip install Flask
    ```
 3. Access the endpoints via `http://127.0.0.1:5000`.
 
-#### Example Requests
+##### Example Requests
 
 - Fetch all books:
   ```bash
@@ -182,43 +182,43 @@ pip install Flask
 
 ---
 
-## Notes
+### Notes
 
 - Ensure the `Books` and `JSON` directories are populated before running the Flask server.
 - The API assumes that the folder and file structure matches the output of the novel content scraper.
 
 
 
-# Frontend - React Frontend for Novel Reader
+## Frontend - ###React Frontend for Novel Reader
 
 This project is a React-based frontend for a novel reading application. It interacts with a Flask backend API to display a list of novels, chapters, and individual pages with customizable settings for user experience. The application supports features such as navigation between chapters, font and background customization.
 
-## Features
+### Features
 
-### Core Functionality
+#### Core Functionality
 - **Home Page**: Displays the list of books fetched from the backend API.
 - **Book Menu**: Lists all chapters available for a selected book.
 - **Chapter Navigation**: Allows users to navigate through chapters and read their content.
 
-### Customization Options
+#### Customization Options
 - **Background Color**: Users can switch between three background colors: white, black, and grey.
 - **Font Color**: Users can toggle between three font colors: white, black, and grey.
 - **Font Size**: Users can increase or decrease the font size within a range of 1px to 64px.
 
 
-### Error Handling
+#### Error Handling
 - Displays loading indicators while fetching data.
 - Error messages for API failures with the error details.
 
-### State Management
+#### State Management
 - Uses React Query for efficient API calls and caching.
 - `useState` is used for UI-related states, such as font size and color settings.
 
-### Routing
+#### Routing
 - Implements client-side routing with React Router for seamless navigation.
 - Supports routes for home, book menu, and individual chapters.
 
-## Project Structure
+### Project Structure
 
 ```
 src/
@@ -238,40 +238,40 @@ src/
 |└── index.js
 ```
 
-## Dependencies
+### Dependencies
 
-### Core Libraries
+#### Core Libraries
 - **React**: For building user interfaces.
 - **React Router**: For client-side routing.
 - **React Query**: For API data fetching and state management.
 
-### Additional Tools
+#### Additional Tools
 - **Font Awesome**: For using icons in UI components.
 
-### Development Environment
+#### Development Environment
 - **Node.js**: Required to run the development server.
 
-## API Endpoints
+### API Endpoints
 
-### Home Page
+#### Home Page
 - **Endpoint**: `GET /booksMenu`
 - **Description**: Fetches a list of books with their metadata.
 
-### Book Menu
+#### Book Menu
 - **Endpoint**: `GET /booksMenu/:bookID`
 - **Description**: Fetches chapter details for a specific book.
 
-### Chapter Content
+#### Chapter Content
 - **Endpoint**: `GET /booksMenu/:bookID/chapter/:chapterID`
 - **Description**: Fetches content for a specific chapter.
 
-## How to Run
+### How to Run
 
-### Prerequisites
+#### Prerequisites
 - Ensure Node.js is installed on your system.
 - Backend API should be running locally on `http://127.0.0.1:5000`.
 
-### Installation
+#### Installation
 1. Clone the repository.
 2. Navigate to the project directory.
 3. Install dependencies:
@@ -279,7 +279,7 @@ src/
    npm install
    ```
 
-### Running the Application
+#### Running the Application
 1. Start the development server:
    ```bash
    npm run dev
@@ -288,18 +288,18 @@ src/
 
 ## Customization Options
 
-### Change Background and Font Colors
+#### Change Background and Font Colors
 - Accessible via the HeadBar component.
 - Click on the corresponding color icons to update the settings.
 
-### Adjust Font Size
+#### Adjust Font Size
 - Use the `+` and `-` buttons in the HeadBar to increase or decrease font size.
 
-## Known Issues and Limitations
+### Known Issues and Limitations
 - **CSS Selector Dependency**: Frontend assumes consistent CSS selectors from the backend data.
 - **Hardcoded API URL**: Backend URL is hardcoded; make sure it matches your backend server.
 
-## License
+### License
 This project is open-source and free to use under the MIT license.
 
 ---
