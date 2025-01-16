@@ -1,0 +1,15 @@
+.homeContainer{
+    width:100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 3vw;
+    grid-row-gap:20vh;
+    margin-top: 5vh;
+}
+
+.book{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,34 @@
+.app{
+  width:100%;
+  height:100%;
+}
+
+.footer{
+  width:100%;
+  position: fixed;
+  bottom:0;
+  z-index: 1;
+}
+
+
+.headBar{
+  width:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.color{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw;
+  padding-right: 5vw;
+  padding:2vh 3vw;
+}
+
+
+.colorType :hover{
+  cursor: pointer;
+}

@@ -1,0 +1,36 @@
+.pageContainer{
+    width:100%;
+    height:auto;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.contentContainer{
+    margin:5vh 10vw;
+}
+
+
+.btnContainer{
+    margin-bottom: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3vw;
+}
+
+
+.btn{
+    background-color: transparent;
+    border: 2px solid black;
+    border-radius: 10px;
+    width:8vw;
+    height:5vh;
+    box-shadow: 3px 3px 0 0;
+    &:hover{
+        cursor: pointer;
+        box-shadow: 1px 1px 0 0;
+    }
+}
