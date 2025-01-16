@@ -1,6 +1,6 @@
 # Novel
 
-## Backend - ##Novel Content Scraper and Flask API Server
+## Backend - Novel Content Scraper and Flask API Server
 
 This document provides details on two integrated components: a novel content scraper and a Flask API server to organize and serve the scraped content.
 
@@ -189,7 +189,7 @@ pip install Flask
 
 
 
-## Frontend - ###React Frontend for Novel Reader
+## Frontend - React Frontend for Novel Reader
 
 This project is a React-based frontend for a novel reading application. It interacts with a Flask backend API to display a list of novels, chapters, and individual pages with customizable settings for user experience. The application supports features such as navigation between chapters, font and background customization.
 
