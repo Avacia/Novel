@@ -14,7 +14,7 @@ function App() {
   const [fontColor, setFontColor] = useState("black")
   const [fontSize, setFontSize] = useState(16)
 
-  return(
+  return (
     <div 
       className="app" 
       style={{
@@ -23,29 +23,25 @@ function App() {
         fontSize: `${fontSize}px`
       }}
     >
-      <div className="headBar">
-        <HeadBar 
-          color={color} 
-          setColor={setColor}
-          fontColor={fontColor}
-          setFontColor={setFontColor}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-        />
-      </div>
+      <HeadBar 
+        color={color} 
+        setColor={setColor}
+        fontColor={fontColor}
+        setFontColor={setFontColor}
+        fontSize={fontSize}
+        setFontSize={setFontSize}
+      />
 
-      <div className="content">
+      <main className="content">
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/addBook' element={<AddBook />} />
           <Route path='/BookMenu/:bookID' element={<Book />} />     
           <Route path='/BookMenu/:bookID/Chapter/:chapterID' element={<Page />} />         
         </Routes>
-      </div>
+      </main>
 
-      <div className="footer">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   )
 }
