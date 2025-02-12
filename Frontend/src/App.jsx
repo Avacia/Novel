@@ -1,8 +1,6 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 import Home from "./component/Home/Home"
 import HeadBar from "./component/HeadBar/Headbar"
@@ -38,41 +36,16 @@ function App() {
 
   return(
     <div className="app" style={{backgroundColor: `${color}`, 
-    color: `${fontColor}`, fontSize: `${fontSize}px`}}>
+        color: `${fontColor}`, fontSize: `${fontSize}px`}}>
       <div className="headBar">
-        <HeadBar />
-
-        <div className="backgroundColor">
-          <select className='dropdown' value={color} 
-            onChange={(e) => ChangeBackgroundColor(e.target.value)}>
-            {
-              Object.keys(colorList).map((index) => (
-                <option value={index} key={index}>
-                  {colorList[index]}
-                </option>
-              ))
-            }
-          </select>
-        </div>
-
-        <div className="fontColor">
-          <select className='dropdown' value={fontColor}
-            onChange={(e) => ChangeFontColor(e.target.value)}>
-            {
-              Object.keys(colorList).map((index) => (
-                <option value={index} key={index}>
-                  {colorList[index]}
-                </option>
-              ))
-            }
-          </select>
-        </div>
-
-        <div className="fontSize">
-          <FontAwesomeIcon icon={faMinus} onClick={DecreaseFontSize}/>
-          <p>{fontSize}</p>
-          <FontAwesomeIcon icon={faPlus} onClick={IncreaseFontSize}/>
-        </div>
+        <HeadBar 
+          color={color} 
+          setColor={setColor}
+          fontColor={fontColor}
+          setFontColor={setFontColor}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+        />
       </div>
 
       <div className="content">

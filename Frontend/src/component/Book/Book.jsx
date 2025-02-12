@@ -25,15 +25,15 @@ export default function Book(){
 
     return(
         <div className={style.bookContainer}>
-            <h1>{data.FolderName}</h1>
+            <h1>{data.folder_name}</h1>
 
             <div className={style.chapterContainer}>
                 {
-                    Object.entries(data.Chapter).map((chapter, index) => (
+                    data.chapters.map((chapter, index) => (
                         <div key={index} className={style.chapter}>
                             <NavLink to={`/BookMenu/${bookID}/Chapter/${index + 1}`}
-                                     state={{ chapterLength: data.Chapter.length }}>
-                                        <p>{chapter[1].split(".json")[0]}</p>
+                                     state={{ chapterLength: data.chapters.length }}>
+                                        <p>{chapter.split(".json")[0]}</p>
                             </NavLink>
                         </div>
                     ))

@@ -1,9 +1,21 @@
 File store settings in json format.
 
-Name: Book Name
-Menu URL: Menu's URL
-Page CSS: CSS selector for all pages
-Page Link: Prefix of the page URL
-Title CSS: CSS selector for title
-Body CSS: CSS selector for content
-UnwantedSelector: CSS selector for unwanted item
+Name: Example..
+Menu URL: http://example.com/dir
+Multi-Page: next page css
+Page CSS: .className .... li a(all the way to the link path)
+Page Link: http://example.com/123456/555.html then the link will be http://example.com
+Title CSS: .className .... h1 (Title of the page)
+Body CSS: .className .... div.content (Content of the page)
+UnwantedSelector: .className .... div.footer (Unwanted selector)
+
+
+Example:
+Name: "人在大乾，剛揭皇榜你就讓我登基？"
+Menu URL: https://www.twbook.cc/2605506464/dir
+Multi-Page: ""
+Page CSS: ".three-900.all li a"
+Page Link: "https://www.novel543.com"
+Title CSS: "h1"
+Body CSS: ".content p"
+UnwantedSelector: ""

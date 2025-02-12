@@ -1,199 +1,99 @@
-import os
-import requests
-import json
-import re
 import sys
-from bs4 import BeautifulSoup
+import os
+import json
+import logging
+from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
+from novelScrapper import NovelScraper, NovelConfig
 
+logger = logging.getLogger(__name__)
 
-def fetchDataFromWebMenu(link):
-    response = requests.get(link)
-    replacedResponse = re.sub(r'&#x[a-f0-9]{4};', "", response.text)
-    return replacedResponse
+def load_json_config(json_path: str) -> dict:
+    """Load and return configuration from JSON file"""
+    with open(json_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
+def get_book_name() -> str:
+    """Get book name from stdin or user input"""
+    if not sys.stdin.isatty():
+        return json.loads(sys.stdin.read())['bookName']
+    return input("Book name: ")
 
-def updateURL(url, pageNumber):
-    pageURL = url.replace("{i}", str(pageNumber))
-    return pageURL
+def create_config_from_json(data: dict) -> NovelConfig:
+    """Create NovelConfig instance from JSON data"""
+    return NovelConfig(
+        book_name=data['book_name'],
+        menu_url=data['menu_url'],
+        multi_page=data['multi_page'],
+        page_css=data['page_css'],
+        page_link=data['page_link'],
+        title_css=data['title_css'],
+        body_css=data['body_css'],
+        unwanted_selector=data['unwanted_selector']
+    )
 
-
-def beautifulSoupFunction(data, itemCSS, needLink):
-    soup = BeautifulSoup(data, 'html.parser')
-    items = soup.select(itemCSS)
-
-    if needLink is None:
-        return [item.get_text(strip=True) for item in items]
-    else:
-        pageLinks = []
-        for link in items:
-            pageLinks.append(f"{needLink}{link['href']}")
-        return pageLinks
-
-
-def getTitle(data, titleCSS):
-    title = beautifulSoupFunction(data, titleCSS, None)
-    return title
-
-
-def getBody(data, bodyCSS):
-    body = beautifulSoupFunction(data, bodyCSS, None)
-    return body
-
-
-def unwantedItem(soup, removeItem):
-    return soup
-
-
-def createBookFolder(bookName, folderPath):
-    if os.path.exists(folderPath) and os.path.isdir(folderPath):   
-        bookPath = os.path.join(folderPath, bookName)     
-        os.makedirs(bookPath, exist_ok=True)
-        print(f"Folder {bookName} created inside Books.")
-        return folderPath
-        
-    else:
-        print(f"The folder 'Books' does not exist in the current directory.")
-        
-
-def createBookInfo(bookName, menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, folderName):
-    data = {
-        "Name" : bookName,
-        "Menu URL": menuUrl,
-        "Multi Page": multiPage,
-        "Page CSS": pageCSS,
-        "Page Link": pageLink,
-        "Title CSS": titleCSS,
-        "Body CSS": bodyCSS,
-        "Unwanted selector": unwantedSelector
-    }
-    
-    fileName = f"{bookName}.json"
-    
-    folderPath = findFolderPath(folderName)
-    filePath = os.path.join(folderPath, fileName)
-    with open(filePath, "w", encoding="utf-8") as json_file:
-        json.dump(data, json_file, indent=4)
-    print(f"JSON file {fileName} created successfully.")
-    
-
-def createFileForChapter(i, title, paragraph, folderPath):
-    filePath = os.path.join(folderPath, f"Chapter {i}.json")
-    data = {
-        "Title" : title,
-        "Paragraph" : paragraph
-    }
-    with open(filePath, "w", encoding='utf-8') as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
-        
-
-def checkFolderExist(filePath):
-    return True if os.path.isdir(filePath) else False
-
-
-def checkFileExist(filePath):
-    return True if os.path.isfile(filePath) else False
-
-
-def collectUserInput():
-    menuUrl = input("Please input the menu url: ")
-    multiPage = input("Please input the multi page css or leave empty: ")
-    pageCSS = input("Please input page css: ")
-    pageLink = input("Please input page link: ")
-    titleCSS = input("Please input chapter title css: ")
-    bodyCSS = input("Please input chapter body css: ")
-    unwantedSelector = input("Please input the unwanted selector: ")
-    return menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector
-
-
-def loadDataFromFile(dataPath):
-    with open(f'{dataPath}', "r", encoding="utf-8") as file:
-           data = json.load(file)
-    return data
-
-
-def fetchAndCreatePage(i, page, titleCSS, bodyCSS, bookPath):
-    printProgressBar(i + 1, len(page), prefix='Progress:', suffix="Complete", length=50)
-    data = fetchDataFromWebMenu(page[i])
-    title = getTitle(data, titleCSS)
-    paragraph = getBody(data, bodyCSS)
-    createFileForChapter(i + 1, title, paragraph, bookPath)
-    
-
-def findFolderPath(folderName):
-    currentPath = os.getcwd()
-    targetPath = os.path.join(currentPath, folderName)
-    return targetPath
-
-
-def createPages(page, titleCSS, bodyCSS, bookPath):
-    with ThreadPoolExecutor() as executor:
-        results = executor.map(lambda i: fetchAndCreatePage(i, page, titleCSS, bodyCSS, bookPath), 
-                                range(len(page)))
-        for _ in results:
-            pass
-
-
-def createFolderPath(folder, bookName):
-    path = findFolderPath(folder)
-    return os.path.join(path, bookName)
-
-
-def getLinks(url, cssSelector, pageLink):
-    data = fetchDataFromWebMenu(url)
-    result = beautifulSoupFunction(data, cssSelector, pageLink)
-    return result
-
-
-def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s | Iteration: %d/%d' % (prefix, bar, percent, suffix, iteration, total), end='\r')
-    if iteration == total: 
-        print()
-
+def get_interactive_config(book_name: str) -> NovelConfig:
+    """Create NovelConfig instance from user input"""
+    return NovelConfig(
+        book_name=book_name,
+        menu_url=input("Menu URL: "),
+        multi_page=input("Multi-page CSS (optional): "),
+        page_css=input("Page CSS: "),
+        page_link=input("Page link: "),
+        title_css=input("Title CSS: "),
+        body_css=input("Body CSS: "),
+        unwanted_selector=input("Unwanted selector (optional): ")
+    )
 
 def main():
-    bookFolder = "Books"
-    jsonFolder = "JSON"
-    bookName = input("Please input book name: ")
+    scraper = NovelScraper()
+   
+    try:
+        book_name = get_book_name()
+        json_path = os.path.join('JSON', f"{book_name}.json")
 
-    bookPath = createFolderPath(bookFolder, bookName)
-    jsonPath = createFolderPath(jsonFolder, f"{bookName}.json")
-    pathInJson = checkFileExist(jsonPath)
-    pathInBooks = checkFolderExist(bookPath)
-    
-    if pathInJson is True:
-        data = loadDataFromFile(jsonPath)
-           
-        menuUrl = data["Menu URL"]
-        multiPage = data["Multi Page"]
-        pageCSS = data["Page CSS"]
-        pageLink = data["Page Link"]
-        titleCSS = data["Title CSS"]
-        bodyCSS = data["Body CSS"]
-        unwantedSelector = data["Unwanted selector"]
-        
-        print("Loaded data from existing book folder.")
-        
-    else:
-        menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector = collectUserInput()
-        createBookInfo(bookName, menuUrl, multiPage, pageCSS, pageLink, titleCSS, bodyCSS, unwantedSelector, jsonFolder)
-        
-    if pathInBooks is False:
-        createBookFolder(bookName, findFolderPath(bookFolder))
+        if os.path.exists(json_path):
+            config = create_config_from_json(load_json_config(json_path))
+            logger.info(f"Using existing configuration for: {book_name}")
+        else:
+            config = (create_config_from_json(json.loads(sys.stdin.read()))
+                     if not sys.stdin.isatty()
+                     else get_interactive_config(book_name))
 
-    if multiPage:
-        menuPage = updateURL(menuUrl, 1)
-        result = getLinks(menuPage, multiPage, pageLink)
-        allPages = []
-        for index in range(0, len(result)):
-            pageURL = updateURL(index + 1)
-            allPages.extend(getLinks(pageURL, pageCSS, pageLink))
-        createPages(allPages, titleCSS, bodyCSS, bookPath)
-
-    else:
-        page = getLinks(menuUrl, pageCSS, pageLink)
-        createPages(page, titleCSS, bodyCSS, bookPath)
-main()
+        print(f"\nStarting to process {book_name}...")
+        
+        # Get chapter URLs first
+        html = scraper.fetch_page(config.menu_url)
+        urls = scraper.parse_content(html, config.page_css, config.page_link)
+        total_chapters = len(urls)
+        
+        # Create book path
+        book_path = scraper.books_path / config.book_name
+        book_path.mkdir(exist_ok=True)
+        
+        # Save book configuration
+        config_file = scraper.json_path / f"{config.book_name}.json"
+        config_file.write_text(json.dumps(vars(config), indent=4), encoding='utf-8')
+        
+        # Process chapters with progress bar
+        with tqdm(total=total_chapters, desc="Processing chapters") as pbar:
+            with ThreadPoolExecutor() as executor:
+                futures = []
+                for i in range(total_chapters):
+                    future = executor.submit(scraper.process_chapter, i, urls, config, book_path)
+                    future.add_done_callback(lambda x: pbar.update(1))
+                    futures.append(future)
+                
+                # Wait for all futures to complete
+                for future in futures:
+                    future.result()
+            
+        print(f"\nProcessing complete for {book_name}!")
+        logger.info(f"Successfully processed book: {config.book_name}")
+       
+    except Exception as e:
+        logger.error(f"Error processing book: {str(e)}")
+        sys.exit(1)
+        
+if __name__ == "__main__":
+    main()
