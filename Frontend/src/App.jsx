@@ -9,34 +9,20 @@ import AddBook from "./component/AddBook/AddBook"
 import Page from "./component/Page/Page"
 import Footer from "./component/Footer/Footer"
 
-
 function App() {
   const [color, setColor] = useState("white")
   const [fontColor, setFontColor] = useState("black")
   const [fontSize, setFontSize] = useState(16)
 
-  const colorList = {0: "white", 1: "black", 2: "grey"}
-
-  function ChangeBackgroundColor(index){
-    setColor(colorList[Number(index)])
-  }
-
-  function ChangeFontColor(index){
-    setFontColor(colorList[Number(index)])
-  }
-
-  function IncreaseFontSize(){
-    setFontSize(Math.min(fontSize + 1, 64))
-  }
-
-  function DecreaseFontSize(){
-    setFontSize(Math.max(fontSize - 1, 1))
-  }
-
-
   return(
-    <div className="app" style={{backgroundColor: `${color}`, 
-        color: `${fontColor}`, fontSize: `${fontSize}px`}}>
+    <div 
+      className="app" 
+      style={{
+        backgroundColor: color,
+        color: fontColor, 
+        fontSize: `${fontSize}px`
+      }}
+    >
       <div className="headBar">
         <HeadBar 
           color={color} 
@@ -50,10 +36,10 @@ function App() {
 
       <div className="content">
         <Routes>
-          <Route path='/' element={<Home />}></Route>
-          <Route path='/addBook' element={<AddBook />}></Route>
-          <Route path='/BookMenu/:bookID' element={<Book />}></Route>     
-          <Route path='/BookMenu/:bookID/Chapter/:chapterID' element={<Page />}></Route>         
+          <Route path='/' element={<Home />} />
+          <Route path='/addBook' element={<AddBook />} />
+          <Route path='/BookMenu/:bookID' element={<Book />} />     
+          <Route path='/BookMenu/:bookID/Chapter/:chapterID' element={<Page />} />         
         </Routes>
       </div>
 
