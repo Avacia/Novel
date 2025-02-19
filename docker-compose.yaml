@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:5173"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://backend:5000
+    networks:
+      - novel-network
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: ./Backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Backend:/app
+      - ./Backend/Books:/app/Books
+      - ./Backend/JSON:/app/JSON
+    networks:
+      - novel-network
+
+networks:
+  novel-network:
+    driver: bridge
