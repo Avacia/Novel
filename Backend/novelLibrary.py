@@ -12,13 +12,27 @@ class NovelLibrary:
 
     def _load_books_metadata(self) -> None:
         """Load metadata for all books from JSON files"""
-        print(f"Loading books from: {self.json_path}")
-        for file in os.listdir(self.json_path):
-            if file.endswith(".json"):
-                print(f"Found book file: {file}")
+        try:
+            print(f"Loading books from: {self.json_path}")
+            if not os.path.exists(self.json_path):
+                print(f"JSON directory not found: {self.json_path}")
+                return
+                
+            json_files = [f for f in os.listdir(self.json_path) if f.endswith(".json")]
+            if not json_files:
+                print("No JSON files found")
+                return
+                
+            for file in json_files:
+                print(f"Loading book file: {file}")
                 with open(os.path.join(self.json_path, file), "r", encoding='utf-8') as json_file:
-                    self.books_metadata.append(json.load(json_file))
-        print(f"Total books loaded: {len(self.books_metadata)}")
+                    metadata = json.load(json_file)
+                    print(f"Loaded metadata: {metadata}")
+                    self.books_metadata.append(metadata)
+            print(f"Total books loaded: {len(self.books_metadata)}")
+        except Exception as e:
+            print(f"Error loading books metadata: {str(e)}")
+
 
     def get_chapter_files(self, folder_path: str) -> List[str]:
         """Get sorted list of chapter files from a book folder"""

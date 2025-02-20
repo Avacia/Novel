@@ -14,25 +14,22 @@ export default function Home(){
     
     async function fetchData(){
         const response = await fetch("http://127.0.0.1:5000/booksMenu")
-
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
-
-        return await response.json()
+        const data = await response.json()
+        return data.books
     }
-
     
-    const { data, isLoading, isError, error } = useQuery("Books", fetchData) 
-    console.log("Books data:", data?.books)
+    const { data, isLoading, isError, error } = useQuery("Books", fetchData)
+    console.log(data)
 
     if(isLoading) return <div>Loading......</div>
-
     if(isError) return <div>Error: {error.message}</div>
 
     return(
         <div className={style.homeContainer}>
-            {data.books.map((book, index) => (
+            {data?.map((book, index) => (
                 <div key={index} className={style.book}>
                     <NavLink to={`/BookMenu/${index + 1}`}><p>{book.book_name}</p></NavLink>
                 </div>

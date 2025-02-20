@@ -17,8 +17,12 @@ def create_app() -> Flask:
 
     @app.route('/booksMenu', methods=['GET'])
     def get_books():
-        return jsonify({"books": library.books_metadata})
-
+        try:
+            books_data = {"books": library.books_metadata}
+            return jsonify(books_data)
+        except Exception as e:
+            return jsonify({"error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR    
+            
     @app.route("/booksMenu/<int:book_id>", methods=['GET'])
     def get_book_by_id(book_id):
         try:
@@ -63,5 +67,5 @@ def create_app() -> Flask:
 if __name__ == '__main__':
     print("Starting Flask server...")
     app = create_app()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
     
